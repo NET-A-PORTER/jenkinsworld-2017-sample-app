@@ -1,0 +1,23 @@
+{ -> 
+    pipeline {
+        agent any
+
+        stages {
+            stage('Build') {
+                steps {
+                    echo 'Building..'
+                }
+            }
+            stage('Integration Test') {
+                steps {
+                    echo 'Testing..'
+                }
+            }
+            stage('Deploy to Heroku') {
+                steps {
+                    echo 'Deploying....'
+                }
+            }
+        }
+    } 
+}
