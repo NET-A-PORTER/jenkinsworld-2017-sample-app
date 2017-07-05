@@ -3,21 +3,24 @@
         agent any
 
         stages {
-        stage('Build') {
-            steps {
-            echo 'Building..'
+            stage('Build') {
+                steps {
+                    echo 'Building..'
+                    shell 'sbt compile'
+                }
             }
-        }
-        stage('Test') {
-            steps {
-            echo 'Testing..'
+            stage('Test') {
+                steps {
+                    echo 'Testing..'
+                    shell 'sbt test'
+                }
             }
-        }
-        stage('Deploy Locally') {
-            steps {
-            echo 'Deploying....'
+            stage('Deploy Locally') {
+                steps {
+                    echo 'Deploying....'
+                    shell 'sbt docker:publishLocal'       
+                }
             }
-        }
         }
     }
 }
