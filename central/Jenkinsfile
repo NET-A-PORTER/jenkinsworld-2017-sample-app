@@ -1,23 +1,15 @@
-{ -> 
-    pipeline {
-        agent any
-
-        stages {
-            stage('Build') {
-                steps {
-                    echo 'Building..'
-                }
-            }
-            stage('Integration Test') {
-                steps {
-                    echo 'Testing..'
-                }
-            }
-            stage('Deploy to Heroku') {
-                steps {
-                    echo 'Deploying....'
-                }
-            }
+{ -> docker.image('slave-sbt').inside
+    {
+        stage('Build') {
+                sh 'sbt compile'
         }
-    } 
+        stage('Creating Docker container') {
+                sh 'sbt docker:stage'
+        }
+        stage('Deploy to Heroku') {
+                echo 'We will deploy to Heroku, sooner or later ...'
+        }
+    }
+
 }
+

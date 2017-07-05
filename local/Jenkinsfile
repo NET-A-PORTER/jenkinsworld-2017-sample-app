@@ -1,26 +1,13 @@
-{ ->
-    pipeline {
-        agent any
-
-        stages {
-            stage('Build') {
-                steps {
-                    echo 'Building..'
-                    sh 'sbt compile'
-                }
-            }
-            stage('Test') {
-                steps {
-                    echo 'Testing..'
-                    sh 'sbt test'
-                }
-            }
-            stage('Deploy Locally') {
-                steps {
-                    echo 'Deploying....'
-                    sh 'sbt docker:publishLocal'
-                }
-            }
+{ -> docker.image('slave-sbt').inside 
+    {
+        stage('Build') {
+                sh 'sbt compile'
+        }
+        stage('Test') {
+                sh 'sbt test'
+        }
+        stage('Deploy Locally') {
+                sh 'sbt docker:publishLocal'
         }
     }
 }
