@@ -6,19 +6,19 @@
             stage('Build') {
                 steps {
                     echo 'Building..'
-                    shell 'sbt compile'
+                    sh 'sbt compile'
                 }
             }
             stage('Test') {
                 steps {
                     echo 'Testing..'
-                    shell 'sbt test'
+                    sh 'sbt test'
                 }
             }
             stage('Deploy Locally') {
                 steps {
                     echo 'Deploying....'
-                    shell 'sbt docker:publishLocal'       
+                    sh 'sbt docker:publishLocal'
                 }
             }
         }
