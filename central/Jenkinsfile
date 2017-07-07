@@ -6,8 +6,14 @@
         stage('Creating Docker container') {
                 sh sbt('docker:stage')
         }
-        stage('Deploy to Heroku') {
-                echo 'We will deploy to Heroku, sooner or later ...'
+        if (env.BRANCH_NAME == "master") {
+            stage('Deploy to Heroku') {
+                withCredentials([[$class: 'UsernamePasswordMultiBinding',
+                                  credentialsId: 'heroku',
+                                  usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+                    sh "git push -f https://$USERNAME:$PASSWORD@git.heroku.com/jenkinsworld-2017-sample-app.git HEAD:master"
+                }
+            }
         }
     }
 }
