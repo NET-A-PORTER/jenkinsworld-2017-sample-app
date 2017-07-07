@@ -1,13 +1,18 @@
 { -> docker.image('slave-sbt').inside 
     {
         stage('Build') {
-                sh 'sbt compile'
+            sh sbt('compile')
         }
         stage('Test') {
-                sh 'sbt test'
+            sh sbt('test')
         }
         stage('Deploy Locally') {
-                sh 'sbt docker:publishLocal'
+            sh sbt('docker:publishLocal')
         }
+
     }
+}
+
+def sbt(target) {
+    return "sbt -no-colors $target"
 }

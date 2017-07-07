@@ -1,14 +1,17 @@
 { -> docker.image('slave-sbt').inside
     {
         stage('Build') {
-                sh 'sbt compile'
+                sh sbt('compile')
         }
         stage('Creating Docker container') {
-                sh 'sbt docker:stage'
+                sh sbt('docker:stage')
         }
         stage('Deploy to Heroku') {
                 echo 'We will deploy to Heroku, sooner or later ...'
         }
     }
+}
 
+def sbt(target) {
+    return "sbt -no-colors $target"
 }

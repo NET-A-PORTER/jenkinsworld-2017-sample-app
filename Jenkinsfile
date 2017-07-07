@@ -1,5 +1,6 @@
 #!/bin/env groovy
 
+
 node {
     checkout scm
 
@@ -12,3 +13,4 @@ node {
         load "local/Jenkinsfile"
     }
 }()
+
