@@ -11,7 +11,9 @@
                 withCredentials([[$class: 'UsernamePasswordMultiBinding',
                                   credentialsId: 'heroku',
                                   usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-                    sh "git push -f https://$USERNAME:$PASSWORD@git.heroku.com/jenkinsworld-2017-sample-app.git HEAD:master"
+                    sh "echo 'machine git.heroku.com login $USERNAME password $PASSWORD' > ~/.netrc"
+                    sh "chmod 600 ~/.netrc"
+                    sh "git push -f https://git.heroku.com/jenkinsworld-2017-sample-app.git HEAD:master"
                 }
             }
         }
