@@ -8,6 +8,17 @@
         }
         stage('Deploy Locally') {
             sh sbt('docker:publishLocal')
+
+            def dockerTag = env.BRANCH_NAME.replaceAll('/', '-')
+            cleanUpOldContainers(dockerTag)
+            runContainer(dockerTag)
+
+            def containerUrl = getRunningContainerURL(dockerTag)
+
+            echo "Running on $containerUrl"
+            currentBuild.setDescription("$containerUrl")
+
+
         }
         stage('Push to GitHub') {
             withCredentials([[$class: 'UsernamePasswordMultiBinding', 
@@ -21,4 +32,28 @@
 
 def sbt(target) {
     return "sbt -no-colors $target"
+}
+
+def cleanUpOldContainers(dockerTag) {
+    try {
+        sh "docker rm -f $dockerTag"
+    } catch (Exception e) {
+        echo "Docker container $dockerTag did not exist => error ignored"
+    }
+}
+
+def runContainer(dockerTag) {
+    sh "docker run -d -P -ti --name $dockerTag play-scala-starter-example:$dockerTag"
+}
+
+def getRunningContainerURL(dockerTag) {
+    def portInfo = sh(script: "docker port $dockerTag", returnStdout: true)
+    def port = sh(script: "expr '$portInfo' : '[^:]*:\\([0-9]\\+\\).*'", returnStdout: true)
+    def baseUrl = (sh(script: "expr ${env.JENKINS_URL} : '\\(http[s]\\?://[a-z0-9\\.]*\\).*'", returnStdout: true)).trim()
+    return """
+       <a href='$baseUrl:$port/' target='_blank'>
+           Running in
+           <img src='https://playframework.com/assets/images/logos/play_full_color.png'
+                style='height: 16px; width: 30px;'></img>
+       </a>"""
 }
