@@ -1,8 +1,10 @@
 name := """play-scala-starter-example"""
 
-version := "1.0-SNAPSHOT"
+lazy val root = (project in file(".")).enablePlugins(PlayScala).enablePlugins(GitVersioning)
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
+dockerExposedPorts := Seq(9000)
+
+git.useGitDescribe := true
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 

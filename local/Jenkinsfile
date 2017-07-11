@@ -9,7 +9,7 @@
         stage('Deploy Locally') {
             sh sbt('docker:publishLocal')
 
-            def dockerTag = env.BRANCH_NAME.replaceAll('/', '-')
+            def dockerTag = (sh(script: "git describe --tags HEAD", returnStdout: true)).trim()
             cleanUpOldContainers(dockerTag)
             runContainer(dockerTag)
 
@@ -34,22 +34,34 @@ def sbt(target) {
     return "sbt -no-colors $target"
 }
 
+def containerName() {
+    return "play-scala-starter-example-" + env.BRANCH_NAME.replaceAll("/","-")
+}
+
 def cleanUpOldContainers(dockerTag) {
     try {
-        sh "docker rm -f $dockerTag"
+        def name = containerName()
+        def containers = sh(script: "docker ps -q --filter name=$name", returnStdout: true).trim()
+        def containersArgs = containers.replaceAll("\n"," ").trim()
+        if (!containersArgs.isEmpty()) {
+            sh "docker rm -f $containersArgs"
+        }
     } catch (Exception e) {
+        echo "${e.toString()}"
         echo "Docker container $dockerTag did not exist => error ignored"
     }
 }
 
 def runContainer(dockerTag) {
-    sh "docker run -d -P -ti --name $dockerTag play-scala-starter-example:$dockerTag"
+    def name = containerName()
+    sh "docker run -d -P -ti --name $name-$dockerTag play-scala-starter-example:$dockerTag"
 }
 
 def getRunningContainerURL(dockerTag) {
-    def portInfo = sh(script: "docker port $dockerTag", returnStdout: true)
-    def port = sh(script: "expr '$portInfo' : '[^:]*:\\([0-9]\\+\\).*'", returnStdout: true)
-    def baseUrl = (sh(script: "expr ${env.JENKINS_URL} : '\\(http[s]\\?://[a-z0-9\\.]*\\).*'", returnStdout: true)).trim()
+    def name = containerName()
+    def portInfo = sh(script: "docker port $name-$dockerTag", returnStdout: true)
+    def port = portInfo.split(":")[1]
+    def baseUrl = env.JENKINS_URL.endsWith("/") ? env.JENKINS_URL[0..-2] : env.JENKINS_URL
     return """
        <a href='$baseUrl:$port/' target='_blank'>
            Running in
