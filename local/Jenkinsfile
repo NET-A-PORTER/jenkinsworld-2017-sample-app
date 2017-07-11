@@ -21,13 +21,11 @@
 
         }
 
-        if(env.BRANCH_NAME == 'master') {
-            stage('Push to GitHub') {
-                withCredentials([[$class: 'UsernamePasswordMultiBinding',
-                                  credentialsId: 'github',
-                                  usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
-                    sh "git push -f https://$USERNAME:$PASSWORD@github.com/NET-A-PORTER/jenkinsworld-2017-sample-app HEAD:${env.BRANCH_NAME}"
-                }
+        stage('Push to GitHub') {
+            withCredentials([[$class: 'UsernamePasswordMultiBinding',
+                              credentialsId: 'github',
+                              usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
+                sh "git push -f https://$USERNAME:$PASSWORD@github.com/NET-A-PORTER/jenkinsworld-2017-sample-app ${env.BRANCH_NAME}:${env.BRANCH_NAME}"
             }
         }
     }
