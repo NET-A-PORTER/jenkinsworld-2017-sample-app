@@ -26,7 +26,7 @@
                               credentialsId: 'github',
                               usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD']]) {
                 sh "git branch --list ${env.BRANCH_NAME} || git checkout -b ${env.BRANCH_NAME}"
-                sh "git push -f https://$USERNAME:$PASSWORD@github.com/NET-A-PORTER/jenkinsworld-2017-sample-app ${env.BRANCH_NAME}"
+                sh "git push -f https://$USERNAME:$PASSWORD@github.com/NET-A-PORTER/jenkinsworld-2017-sample-app HEAD:refs/heads/${env.BRANCH_NAME}"
             }
         }
     }
